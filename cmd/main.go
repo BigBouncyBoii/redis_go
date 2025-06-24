@@ -15,11 +15,15 @@ func main() {
 				fmt.Printf("Received message: %v from %v", string(msg.Payload), msg.From)
 				args, err := protocol.ParseCommand(msg.Payload)
 				if err != nil{
-					fmt.Printf("Error parsing command: %v\n", err)
+					fmt.Printf("Error parsing command: %v", err)
+					s.WriteError(msg.Conn, err)
+					return
 				}
 				response, err := server.HandleCommand(args, db)
 				if err != nil {
-					fmt.Printf("Error handling command: %v\n", err)
+					fmt.Printf("Error handling command: %v", err)
+					s.WriteError(msg.Conn, err)
+					return
 				}
 				byteResponse := protocol.ParseRespone(response)
 				s.WriteResponse(msg.Conn, byteResponse)

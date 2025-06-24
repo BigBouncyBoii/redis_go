@@ -83,3 +83,12 @@ func (s *Server) WriteResponse(conn net.Conn, response []byte) error {
 	_, err := conn.Write(response)
 	return err
 }
+
+func (s* Server) WriteError(conn net.Conn, err error) error {
+	if err == nil {
+		return nil
+	}
+	errorResponse := fmt.Sprintf("-ERR %s\r\n", err.Error())
+	_, writeErr := conn.Write([]byte(errorResponse))
+	return writeErr
+}

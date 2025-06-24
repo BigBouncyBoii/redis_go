@@ -57,19 +57,23 @@ func readBulkString(reader *bufio.Reader) ([]string, error) {
 	return args, nil
 }
 
+func isInteger(s string) bool {
+	_, err := strconv.ParseInt(s, 10, 64)
+	return err == nil
+}
+
 func ParseRespone(response string) []byte {
-	switch response {
-	case "pong":
+	if response == "pong"{
 		return []byte("+PONG\r\n")
-	case "ok":
+	} else if response == "ok" {
 		return []byte("+OK\r\n")
-	case "-1":
+	} else if response == "-1" {	
 		return []byte("$-1\r\n")
-	case "0":
-		return []byte(":0\r\n")
-	case "1":
-		return []byte(":1\r\n")
-	default:
+	} else if isInteger(response) {
+		return []byte(":" + response + "\r\n")
+	} else if strings.HasPrefix(response, "*") {
+		return []byte(response)
+	} else {
 		return []byte("$" + strconv.Itoa(len(response)) + "\r\n" + response + "\r\n")
 	}
 }
